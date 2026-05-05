@@ -3,9 +3,16 @@ import { Plus } from "lucide-react";
 import TimeRegisterModal from "./TimeRegisterModal";
 import Statistics from "./Statitics";
 
+type TimeEntry = {
+  type: string;
+  hours?: number;
+  startTime?: string;
+  endTime?: string;
+};
+
 const MonthView = () => {
   const [entries, setEntries] = useState<{
-    [key: number]: { hours: number; type: string }[];
+    [key: number]: TimeEntry[];
   }>(() => {
     const saved = localStorage.getItem("entries");
     return saved ? JSON.parse(saved) : {};
@@ -72,10 +79,29 @@ const MonthView = () => {
       const dayTotal =
         entries[day]
           ?.filter((e) => e.type === "work")
-          .reduce((s, e) => s + e.hours, 0) ?? 0;
+          .reduce((s, e) => s + getEntryHours(e), 0) ?? 0;
 
       return sum + dayTotal;
     }, 0);
+  };
+
+  const getEntryHours = (entry: {
+    hours?: number;
+    startTime?: string;
+    endTime?: string;
+    type: string;
+  }) => {
+    if (entry.type === "work" && entry.startTime && entry.endTime) {
+      const [sh, sm] = entry.startTime.split(":").map(Number);
+      const [eh, em] = entry.endTime.split(":").map(Number);
+
+      const start = new Date(0, 0, 0, sh, sm);
+      const end = new Date(0, 0, 0, eh, em);
+
+      return (end.getTime() - start.getTime()) / (1000 * 60 * 60);
+    }
+
+    return entry.hours || 0;
   };
 
   return (
@@ -97,7 +123,10 @@ const MonthView = () => {
               const hasHours = weekTotal > 0;
 
               return (
-                <div key={i} className="flex flex-col md:flex-row gap-2 md:gap-4 bg-gray-50 md:bg-transparent rounded-lg p-2 md:p-0">
+                <div
+                  key={i}
+                  className="flex flex-col md:flex-row gap-2 md:gap-4 bg-gray-50 md:bg-transparent rounded-lg p-2 md:p-0"
+                >
                   {/* VECKONUMMER */}
                   <div className="text-xs text-gray-500 mb-1 md:mb-0 md:w-10 md:pt-2">
                     v.{weekNumber}
@@ -123,7 +152,10 @@ const MonthView = () => {
                               <div className="text-xs text-gray-500">
                                 {entries[day]
                                   ?.filter((e) => e.type === "work")
-                                  .reduce((sum, e) => sum + e.hours, 0) ?? 0}
+                                  .reduce(
+                                    (sum, e) => sum + getEntryHours(e),
+                                    0,
+                                  ) ?? 0}
                                 h
                               </div>
 

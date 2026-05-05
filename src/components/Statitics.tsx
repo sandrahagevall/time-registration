@@ -1,6 +1,8 @@
 type TimeEntry = {
-  hours: number;
   type: string;
+  hours?: number;
+  startTime?: string;
+  endTime?: string;
 };
 
 type DayEntries = {
@@ -29,6 +31,26 @@ const getWeekNumber = (date: Date) => {
   );
 };
 
+const sumByType = (entries: TimeEntry[], type: string) => {
+  return entries
+    .filter((e) => e.type === type)
+    .reduce((sum, e) => sum + getEntryHours(e), 0);
+};
+
+const getEntryHours = (entry: TimeEntry) => {
+  if (entry.type === "work" && entry.startTime && entry.endTime) {
+    const [sh, sm] = entry.startTime.split(":").map(Number);
+    const [eh, em] = entry.endTime.split(":").map(Number);
+
+    const start = new Date(0, 0, 0, sh, sm);
+    const end = new Date(0, 0, 0, eh, em);
+
+    return (end.getTime() - start.getTime()) / (1000 * 60 * 60);
+  }
+
+  return entry.hours || 0;
+};
+
 const Statistics = ({ entries, year, month }: StatsProps) => {
   const allEntries = Object.values(entries).flat();
 
@@ -42,7 +64,7 @@ const Statistics = ({ entries, year, month }: StatsProps) => {
 
     const worked = dayEntries
       .filter((e) => e.type === "work")
-      .reduce((sum, e) => sum + e.hours, 0);
+      .reduce((sum, e) => sum + getEntryHours(e), 0);
 
     weeklyStats[week] = (weeklyStats[week] || 0) + worked;
   });
@@ -50,29 +72,12 @@ const Statistics = ({ entries, year, month }: StatsProps) => {
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const targetHours = Math.round((daysInMonth / 7) * weeklyHours);
 
-  const workedHours = allEntries
-    .filter((entry) => entry.type === "work")
-    .reduce((sum, entry) => sum + entry.hours, 0);
-
-  const leaveHours = allEntries
-    .filter((entry) => entry.type === "leave")
-    .reduce((sum, entry) => sum + entry.hours, 0);
-
-  const compTimeHours = allEntries
-    .filter((entry) => entry.type === "compTime")
-    .reduce((sum, entry) => sum + entry.hours, 0);
-
-  const sickHours = allEntries
-    .filter((entry) => entry.type === "sick")
-    .reduce((sum, entry) => sum + entry.hours, 0);
-
-  const parentalLeaveHours = allEntries
-    .filter((entry) => entry.type === "parentalLeave")
-    .reduce((sum, entry) => sum + entry.hours, 0);
-
-  const homeWithChildHours = allEntries
-    .filter((entry) => entry.type === "homeWithChild")
-    .reduce((sum, entry) => sum + entry.hours, 0);
+  const workedHours = sumByType(allEntries, "work");
+  const leaveHours = sumByType(allEntries, "leave");
+  const compTimeHours = sumByType(allEntries, "compTime");
+  const sickHours = sumByType(allEntries, "sick");
+  const parentalLeaveHours = sumByType(allEntries, "parentalLeave");
+  const homeWithChildHours = sumByType(allEntries, "homeWithChild");
 
   const balance = workedHours - targetHours;
 
