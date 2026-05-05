@@ -61,6 +61,14 @@ const Statistics = ({ entries, year, month }: StatsProps) => {
   const sickHours = allEntries
     .filter((entry) => entry.type === "sick")
     .reduce((sum, entry) => sum + entry.hours, 0);
+  
+    const parentalLeaveHours = allEntries
+    .filter((entry) => entry.type === "parentalLeave")
+    .reduce((sum, entry) => sum + entry.hours, 0);
+  
+  const homeWithChildHours = allEntries
+    .filter((entry) => entry.type === "homeWithChild")
+    .reduce((sum, entry) => sum + entry.hours, 0);
 
   const balance = workedHours - targetHours;
 
@@ -70,7 +78,7 @@ const Statistics = ({ entries, year, month }: StatsProps) => {
 
       <div className="space-y-2 text-sm">
         <div className="flex justify-between">
-          <span className="text-gray-600">Arbetade</span>
+          <span className="text-gray-600">Arbetade timmar</span>
           <span className="font-medium">{workedHours}h</span>
         </div>
 
@@ -80,7 +88,7 @@ const Statistics = ({ entries, year, month }: StatsProps) => {
         </div>
 
         <div className="flex justify-between">
-          <span className="text-gray-600">Frånvaro</span>
+          <span className="text-gray-600">Semester</span>
           <span className="font-medium">{leaveHours}h</span>
         </div>
 
@@ -89,41 +97,20 @@ const Statistics = ({ entries, year, month }: StatsProps) => {
           <span className="font-medium">{sickHours}h</span>
         </div>
 
+        <div className="flex justify-between">
+          <span className="text-gray-600">Vabb</span>
+          <span className="font-medium">{homeWithChildHours}h</span>
+        </div>
+
+              <div className="flex justify-between">
+          <span className="text-gray-600">Föräldraledighet</span>
+          <span className="font-medium">{parentalLeaveHours}h</span>
+        </div>
+
         <div className="flex justify-between border-t pt-2 mt-2">
           <span className="text-gray-600">Mål</span>
           <span className="font-medium">{targetHours}h</span>
         </div>
-      </div>
-
-      <div className="mt-4 border-t pt-3">
-        <h4 className="text-sm font-semibold text-gray-500 mb-2">Veckor</h4>
-
-        {Object.entries(weeklyStats)
-          .sort(([a], [b]) => Number(a) - Number(b))
-          .map(([week, hours]) => {
-            const diff = hours - weeklyHours;
-
-            return (
-              <div key={week} className="flex justify-between text-sm">
-                <span>v.{week}</span>
-                <span>
-                  {hours}h{" "}
-                  <span
-                    className={
-                      diff > 0
-                        ? "text-green-600"
-                        : diff < 0
-                          ? "text-orange-500"
-                          : "text-gray-500"
-                    }
-                  >
-                    ({diff > 0 ? "+" : ""}
-                    {diff}h)
-                  </span>
-                </span>
-              </div>
-            );
-          })}
       </div>
 
       <div className="mt-4 text-sm font-semibold">Totalt: {workedHours}h</div>

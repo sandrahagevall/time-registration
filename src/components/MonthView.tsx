@@ -22,52 +22,28 @@ const MonthView = () => {
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
 
-  //Antal dagar i månaden
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const firstOfMonth = new Date(year, month, 1);
 
-  // Vilken dag månaden börjar (0=söndag)
-  const firstDay = new Date(year, month, 1).getDay();
+  // gör måndag = 0
+  const dayOfWeek = (firstOfMonth.getDay() + 6) % 7;
 
-  // gör måndag = 0 istället
-  const startOffset = firstDay === 0 ? 6 : firstDay - 1;
+  // hitta måndagen innan månaden börjar
+  const startDate = new Date(firstOfMonth);
+  startDate.setDate(firstOfMonth.getDate() - dayOfWeek);
 
-  const days: (number | null)[] = [];
+  const weeks: Date[][] = [];
 
-  const weeks: (number | null)[][] = [];
+  let current = new Date(startDate);
 
-  let currentWeek: (number | null)[] = [];
+  for (let w = 0; w < 6; w++) {
+    const week: Date[] = [];
 
-  // fyll första veckan med null
-  for (let i = 0; i < startOffset; i++) {
-    currentWeek.push(null);
-  }
-
-  // loopa dagar
-  for (let day = 1; day <= daysInMonth; day++) {
-    currentWeek.push(day);
-
-    if (currentWeek.length === 7) {
-      weeks.push(currentWeek);
-      currentWeek = [];
+    for (let d = 0; d < 7; d++) {
+      week.push(new Date(current));
+      current.setDate(current.getDate() + 1);
     }
-  }
 
-  // sista veckan
-  if (currentWeek.length > 0) {
-    while (currentWeek.length < 7) {
-      currentWeek.push(null);
-    }
-    weeks.push(currentWeek);
-  }
-
-  // tomma rutor i början
-  for (let i = 0; i < startOffset; i++) {
-    days.push(null);
-  }
-
-  // riktiga dagar
-  for (let i = 1; i <= daysInMonth; i++) {
-    days.push(i);
+    weeks.push(week);
   }
 
   const getWeekNumber = (date: Date) => {
@@ -86,6 +62,23 @@ const MonthView = () => {
     );
   };
 
+  const weeklyHours = 24;
+
+  const getWeekTotal = (week: Date[]) => {
+    return week.reduce((sum, date) => {
+      if (date.getMonth() !== month) return sum;
+
+      const day = date.getDate();
+
+      const dayTotal =
+        entries[day]
+          ?.filter((e) => e.type === "work")
+          .reduce((s, e) => s + e.hours, 0) ?? 0;
+
+      return sum + dayTotal;
+    }, 0);
+  };
+
   return (
     <div>
       <h2 className="text-xl font-bold mb-4">
@@ -99,63 +92,81 @@ const MonthView = () => {
         <div className="flex-1">
           <div className="flex flex-col gap-2">
             {weeks.map((week, i) => {
-              const firstDay = week.find((d) => d !== null);
-
-              const weekNumber = firstDay
-                ? getWeekNumber(new Date(year, month, firstDay))
-                : null;
+              const weekNumber = getWeekNumber(week[0]);
+              const weekTotal = getWeekTotal(week);
+              const diff = weekTotal - weeklyHours;
 
               return (
                 <div key={i} className="flex gap-2 items-start">
                   {/* VECKONUMMER */}
                   <div className="w-10 text-xs text-gray-500 pt-2">
-                    {weekNumber && `v.${weekNumber}`}
+                    v.{weekNumber}
                   </div>
 
                   {/* DAGAR */}
                   <div className="grid grid-cols-7 gap-2 flex-1">
-                    {week.map((day, index) => (
-                      <div
-                        key={index}
-                        className="h-24 border rounded-lg p-2 relative"
-                      >
-                        {day && (
-                          <>
-                            <div className="text-sm font-semibold">{day}</div>
+                    {week.map((date, index) => {
+                      const day = date.getDate();
+                      const isCurrentMonth = date.getMonth() === month;
 
-                            <div className="text-xs text-gray-500">
-                              {entries[day]
-                                ?.filter((entry) => entry.type === "work")
-                                .reduce(
-                                  (sum, entry) =>
-                                    sum + (Number(entry.hours) || 0),
-                                  0,
-                                ) ?? 0}
-                              h
-                            </div>
+                      return (
+                        <div
+                          key={index}
+                          className={`h-24 border rounded-lg p-2 relative ${
+                            !isCurrentMonth ? "opacity-30" : ""
+                          }`}
+                        >
+                          <div className="text-sm font-semibold">{day}</div>
 
-                            {entries[day]?.map((entry, i) => (
-                              <div
-                                key={i}
-                                className="text-[10px] text-gray-400"
-                              >
-                                {entry.hours}h - {entry.type}
+                          {isCurrentMonth && (
+                            <>
+                              <div className="text-xs text-gray-500">
+                                {entries[day]
+                                  ?.filter((e) => e.type === "work")
+                                  .reduce((sum, e) => sum + e.hours, 0) ?? 0}
+                                h
                               </div>
-                            ))}
 
-                            <div className="absolute bottom-2 right-2">
-                              <Plus
-                                onClick={() => {
-                                  setSelectedDay(day);
-                                  setShowModal(true);
-                                }}
-                                className="w-5 h-5 text-blue-500 cursor-pointer hover:scale-110 bg-white rounded-full shadow p-0.5"
-                              />
-                            </div>
-                          </>
-                        )}
-                      </div>
-                    ))}
+                              {entries[day]?.map((entry, i) => (
+                                <div
+                                  key={i}
+                                  className="text-[10px] text-gray-400"
+                                >
+                                  {entry.hours}h - {entry.type}
+                                </div>
+                              ))}
+
+                              <div className="absolute bottom-2 right-2">
+                                <Plus
+                                  onClick={() => {
+                                    setSelectedDay(day);
+                                    setShowModal(true);
+                                  }}
+                                  className="w-5 h-5 text-blue-500 cursor-pointer hover:scale-110 bg-white rounded-full shadow p-0.5"
+                                />
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* VECKOSALDO */}
+                  <div className="w-20 text-xs text-right pt-2">
+                    <div>{weekTotal}h</div>
+                    <div
+                      className={
+                        diff > 0
+                          ? "text-green-600"
+                          : diff < 0
+                            ? "text-orange-500"
+                            : "text-gray-500"
+                      }
+                    >
+                      ({diff > 0 ? "+" : ""}
+                      {diff}h)
+                    </div>
                   </div>
                 </div>
               );
