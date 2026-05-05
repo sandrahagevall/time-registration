@@ -33,8 +33,11 @@ const TimeRegisterModal = ({ onSave, onClose }: Props) => {
           className="border p-2 rounded w-full mb-4"
         >
           <option value="work">Arbete</option>
-          <option value="leave">Ledig</option>
+          <option value="leave">Semester</option>
+          <option value="compTime">Komptid</option>
           <option value="sick">Sjuk</option>
+          <option value="homeWithChild">Vabb</option>
+          <option value="parentalLeave">Föräldraledighet</option>
         </select>
         <button
           onClick={() => onSave({ hours: Number(value), type })}

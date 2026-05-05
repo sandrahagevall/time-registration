@@ -56,6 +56,10 @@ const Statistics = ({ entries, year, month }: StatsProps) => {
 
   const leaveHours = allEntries
     .filter((entry) => entry.type === "leave")
+    .reduce((sum, entry) => sum + entry.hours, 0);  
+  
+  const compTimeHours = allEntries
+    .filter((entry) => entry.type === "compTime")
     .reduce((sum, entry) => sum + entry.hours, 0);
 
   const sickHours = allEntries
@@ -90,6 +94,11 @@ const Statistics = ({ entries, year, month }: StatsProps) => {
         <div className="flex justify-between">
           <span className="text-gray-600">Semester</span>
           <span className="font-medium">{leaveHours}h</span>
+        </div>
+
+         <div className="flex justify-between">
+          <span className="text-gray-600">Komptid</span>
+          <span className="font-medium">{compTimeHours}h</span>
         </div>
 
         <div className="flex justify-between">

@@ -18,7 +18,6 @@ const MonthView = () => {
   }, [entries]);
 
   const currentDate = new Date();
-
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
 
@@ -87,7 +86,7 @@ const MonthView = () => {
           year: "numeric",
         })}
       </h2>
-      <div className="flex flex-col md:flex-row gap-6">
+      <div className="flex flex-col md:flex-row gap-4 md:gap-6">
         {/* VÄNSTER: Kalender + rubrik */}
         <div className="flex-1">
           <div className="flex flex-col gap-2">
@@ -95,16 +94,17 @@ const MonthView = () => {
               const weekNumber = getWeekNumber(week[0]);
               const weekTotal = getWeekTotal(week);
               const diff = weekTotal - weeklyHours;
+              const hasHours = weekTotal > 0;
 
               return (
-                <div key={i} className="flex gap-2 items-start">
+                <div key={i} className="flex flex-col md:flex-row gap-2 md:gap-4 bg-gray-50 md:bg-transparent rounded-lg p-2 md:p-0">
                   {/* VECKONUMMER */}
                   <div className="w-10 text-xs text-gray-500 pt-2">
                     v.{weekNumber}
                   </div>
 
                   {/* DAGAR */}
-                  <div className="grid grid-cols-7 gap-2 flex-1">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-2 md:gap-3 flex-1">
                     {week.map((date, index) => {
                       const day = date.getDate();
                       const isCurrentMonth = date.getMonth() === month;
@@ -112,7 +112,7 @@ const MonthView = () => {
                       return (
                         <div
                           key={index}
-                          className={`h-24 border rounded-lg p-2 relative ${
+                          className={`h-28 md:h-24 border rounded-lg p-2 relative bg-white ${
                             !isCurrentMonth ? "opacity-30" : ""
                           }`}
                         >
@@ -155,18 +155,29 @@ const MonthView = () => {
                   {/* VECKOSALDO */}
                   <div className="w-20 text-xs text-right pt-2">
                     <div>{weekTotal}h</div>
-                    <div
-                      className={
-                        diff > 0
-                          ? "text-green-600"
-                          : diff < 0
-                            ? "text-orange-500"
-                            : "text-gray-500"
-                      }
-                    >
-                      ({diff > 0 ? "+" : ""}
-                      {diff}h)
+                    <div className="w-full bg-gray-200 h-1.5 rounded mt-1">
+                      <div
+                        className="h-1.5 rounded bg-blue-500"
+                        style={{
+                          width: `${Math.min((weekTotal / weeklyHours) * 100, 100)}%`,
+                        }}
+                      />
                     </div>
+                    {hasHours && (
+                      <div
+                        className={
+                          diff > 0
+                            ? "text-green-600"
+                            : diff < 0
+                              ? "text-orange-500"
+                              : "text-gray-500"
+                        }
+                      >
+                        ({diff > 0 && `+${diff}h övertid`}
+                        {diff < 0 && `${Math.abs(diff)}h kvar`}
+                        {diff === 0 && "klart"})
+                      </div>
+                    )}
                   </div>
                 </div>
               );
