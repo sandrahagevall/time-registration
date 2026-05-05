@@ -99,7 +99,7 @@ const MonthView = () => {
               return (
                 <div key={i} className="flex flex-col md:flex-row gap-2 md:gap-4 bg-gray-50 md:bg-transparent rounded-lg p-2 md:p-0">
                   {/* VECKONUMMER */}
-                  <div className="w-10 text-xs text-gray-500 pt-2">
+                  <div className="text-xs text-gray-500 mb-1 md:mb-0 md:w-10 md:pt-2">
                     v.{weekNumber}
                   </div>
 
@@ -186,7 +186,7 @@ const MonthView = () => {
         </div>
 
         {/* HÖGER: Statistik */}
-        <div className="w-full md:w-64">
+        <div className="w-full md:w-64 flex justify-center md:justify-end">
           <Statistics entries={entries} year={year} month={month} />
         </div>
 

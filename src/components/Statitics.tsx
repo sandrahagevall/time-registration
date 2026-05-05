@@ -56,8 +56,8 @@ const Statistics = ({ entries, year, month }: StatsProps) => {
 
   const leaveHours = allEntries
     .filter((entry) => entry.type === "leave")
-    .reduce((sum, entry) => sum + entry.hours, 0);  
-  
+    .reduce((sum, entry) => sum + entry.hours, 0);
+
   const compTimeHours = allEntries
     .filter((entry) => entry.type === "compTime")
     .reduce((sum, entry) => sum + entry.hours, 0);
@@ -65,11 +65,11 @@ const Statistics = ({ entries, year, month }: StatsProps) => {
   const sickHours = allEntries
     .filter((entry) => entry.type === "sick")
     .reduce((sum, entry) => sum + entry.hours, 0);
-  
-    const parentalLeaveHours = allEntries
+
+  const parentalLeaveHours = allEntries
     .filter((entry) => entry.type === "parentalLeave")
     .reduce((sum, entry) => sum + entry.hours, 0);
-  
+
   const homeWithChildHours = allEntries
     .filter((entry) => entry.type === "homeWithChild")
     .reduce((sum, entry) => sum + entry.hours, 0);
@@ -77,41 +77,43 @@ const Statistics = ({ entries, year, month }: StatsProps) => {
   const balance = workedHours - targetHours;
 
   return (
-    <div className="w-64 bg-white border rounded-xl p-4 shadow-sm h-fit">
+    <div className="w-full max-w-sm md:w-64 bg-white border rounded-xl p-4 shadow-sm h-fit">
       <h3 className="text-sm font-semibold text-gray-500 mb-3">Statistik</h3>
 
-      <div className="space-y-2 text-sm">
-        <div className="flex justify-between">
+      <div className="space-y-3 text-sm">
+        <div className="flex justify-between hover:bg-gray-50 px-1 rounded">
           <span className="text-gray-600">Arbetade timmar</span>
           <span className="font-medium">{workedHours}h</span>
         </div>
 
-        <div className="flex justify-between">
+        <div className="flex justify-between hover:bg-gray-50 px-1 rounded">
           <span className="text-gray-600">Per vecka</span>
           <span className="font-medium">24h</span>
         </div>
 
-        <div className="flex justify-between">
+        <div className="border-t my-3" />
+
+        <div className="flex justify-between hover:bg-gray-50 px-1 rounded">
           <span className="text-gray-600">Semester</span>
           <span className="font-medium">{leaveHours}h</span>
         </div>
 
-         <div className="flex justify-between">
+        <div className="flex justify-between hover:bg-gray-50 px-1 rounded">
           <span className="text-gray-600">Komptid</span>
           <span className="font-medium">{compTimeHours}h</span>
         </div>
 
-        <div className="flex justify-between">
+        <div className="flex justify-between hover:bg-gray-50 px-1 rounded">
           <span className="text-gray-600">Sjuk</span>
           <span className="font-medium">{sickHours}h</span>
         </div>
 
-        <div className="flex justify-between">
+        <div className="flex justify-between hover:bg-gray-50 px-1 rounded">
           <span className="text-gray-600">Vabb</span>
           <span className="font-medium">{homeWithChildHours}h</span>
         </div>
 
-              <div className="flex justify-between">
+        <div className="flex justify-between hover:bg-gray-50 px-1 rounded">
           <span className="text-gray-600">Föräldraledighet</span>
           <span className="font-medium">{parentalLeaveHours}h</span>
         </div>
@@ -122,17 +124,19 @@ const Statistics = ({ entries, year, month }: StatsProps) => {
         </div>
       </div>
 
-      <div className="mt-4 text-sm font-semibold">Totalt: {workedHours}h</div>
+      <div className="mt-4 p-3 rounded-lg bg-gray-50">
+        <div className="text-sm text-gray-500">Totalt</div>
+        <div className="text-lg font-semibold">{workedHours}h</div>
 
-      {/* Status */}
-      <div className="mt-4 text-sm font-semibold">
-        {balance < 0 && (
-          <span className="text-orange-500">Kvar: {Math.abs(balance)}h</span>
-        )}
-        {balance === 0 && <span className="text-blue-500">I fas</span>}
-        {balance > 0 && (
-          <span className="text-green-600">Övertid: +{balance}h</span>
-        )}
+        <div className="mt-2 text-sm font-semibold">
+          {balance < 0 && (
+            <span className="text-orange-500">{Math.abs(balance)}h kvar</span>
+          )}
+          {balance === 0 && <span className="text-blue-500">I fas</span>}
+          {balance > 0 && (
+            <span className="text-green-600">+{balance}h övertid</span>
+          )}
+        </div>
       </div>
     </div>
   );
