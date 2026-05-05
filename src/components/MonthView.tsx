@@ -33,6 +33,33 @@ const MonthView = () => {
 
   const days: (number | null)[] = [];
 
+  const weeks: (number | null)[][] = [];
+
+  let currentWeek: (number | null)[] = [];
+
+  // fyll första veckan med null
+  for (let i = 0; i < startOffset; i++) {
+    currentWeek.push(null);
+  }
+
+  // loopa dagar
+  for (let day = 1; day <= daysInMonth; day++) {
+    currentWeek.push(day);
+
+    if (currentWeek.length === 7) {
+      weeks.push(currentWeek);
+      currentWeek = [];
+    }
+  }
+
+  // sista veckan
+  if (currentWeek.length > 0) {
+    while (currentWeek.length < 7) {
+      currentWeek.push(null);
+    }
+    weeks.push(currentWeek);
+  }
+
   // tomma rutor i början
   for (let i = 0; i < startOffset; i++) {
     days.push(null);
@@ -42,6 +69,22 @@ const MonthView = () => {
   for (let i = 1; i <= daysInMonth; i++) {
     days.push(i);
   }
+
+  const getWeekNumber = (date: Date) => {
+    const tempDate = new Date(date.getTime());
+    tempDate.setHours(0, 0, 0, 0);
+    tempDate.setDate(tempDate.getDate() + 3 - ((tempDate.getDay() + 6) % 7));
+    const week1 = new Date(tempDate.getFullYear(), 0, 4);
+    return (
+      1 +
+      Math.round(
+        ((tempDate.getTime() - week1.getTime()) / 86400000 -
+          3 +
+          ((week1.getDay() + 6) % 7)) /
+          7,
+      )
+    );
+  };
 
   return (
     <div>
@@ -54,48 +97,75 @@ const MonthView = () => {
       <div className="flex flex-col md:flex-row gap-6">
         {/* VÄNSTER: Kalender + rubrik */}
         <div className="flex-1">
-          <div className="grid grid-cols-2 md:grid-cols-7 gap-2">
-            {days.map((day, index) => (
-              <div key={index} className="h-24 border rounded-lg p-2">
-                {day && (
-                  <>
-                    <div className="text-sm font-semibold">{day}</div>
+          <div className="flex flex-col gap-2">
+            {weeks.map((week, i) => {
+              const firstDay = week.find((d) => d !== null);
 
-                    <div className="text-xs text-gray-500">
-                      {entries[day]
-                        ?.filter((entry) => entry.type === "work")
-                        .reduce(
-                          (sum, entry) => sum + (Number(entry.hours) || 0),
-                          0,
-                        ) ?? 0}
-                      h
-                    </div>
+              const weekNumber = firstDay
+                ? getWeekNumber(new Date(year, month, firstDay))
+                : null;
 
-                    {entries[day]?.map((entry, i) => (
-                      <div key={i} className="text-[10px] text-gray-400">
-                        {entry.hours}h - {entry.type}
+              return (
+                <div key={i} className="flex gap-2 items-start">
+                  {/* VECKONUMMER */}
+                  <div className="w-10 text-xs text-gray-500 pt-2">
+                    {weekNumber && `v.${weekNumber}`}
+                  </div>
+
+                  {/* DAGAR */}
+                  <div className="grid grid-cols-7 gap-2 flex-1">
+                    {week.map((day, index) => (
+                      <div
+                        key={index}
+                        className="h-24 border rounded-lg p-2 relative"
+                      >
+                        {day && (
+                          <>
+                            <div className="text-sm font-semibold">{day}</div>
+
+                            <div className="text-xs text-gray-500">
+                              {entries[day]
+                                ?.filter((entry) => entry.type === "work")
+                                .reduce(
+                                  (sum, entry) =>
+                                    sum + (Number(entry.hours) || 0),
+                                  0,
+                                ) ?? 0}
+                              h
+                            </div>
+
+                            {entries[day]?.map((entry, i) => (
+                              <div
+                                key={i}
+                                className="text-[10px] text-gray-400"
+                              >
+                                {entry.hours}h - {entry.type}
+                              </div>
+                            ))}
+
+                            <div className="absolute bottom-2 right-2">
+                              <Plus
+                                onClick={() => {
+                                  setSelectedDay(day);
+                                  setShowModal(true);
+                                }}
+                                className="w-5 h-5 text-blue-500 cursor-pointer hover:scale-110 bg-white rounded-full shadow p-0.5"
+                              />
+                            </div>
+                          </>
+                        )}
                       </div>
                     ))}
-
-                    <div className="flex justify-end mt-4">
-                      <Plus
-                        onClick={() => {
-                          setSelectedDay(day);
-                          setShowModal(true);
-                        }}
-                        className="w-5 h-5 text-blue-500 font-bold cursor-pointer hover:scale-110"
-                      />
-                    </div>
-                  </>
-                )}
-              </div>
-            ))}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
 
         {/* HÖGER: Statistik */}
         <div className="w-full md:w-64">
-          <Statistics entries={entries} targetHours={80} />
+          <Statistics entries={entries} year={year} month={month} />
         </div>
 
         {/* Modal (oförändrad) */}
