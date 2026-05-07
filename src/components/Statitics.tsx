@@ -138,11 +138,11 @@ const Statistics = ({ entries, year, month }: StatsProps) => {
 
         <div className="mt-2 text-sm font-semibold">
           {balance < 0 && (
-            <span className="text-orange-500">{Math.abs(balance)}h kvar</span>
+            <span className="text-orange-500">{Math.abs(formatHours(balance))}h kvar</span>
           )}
           {balance === 0 && <span className="text-blue-500">I fas</span>}
           {balance > 0 && (
-            <span className="text-green-600">+{balance}h övertid</span>
+            <span className="text-green-600">+{formatHours(balance)}h övertid</span>
           )}
         </div>
       </div>
