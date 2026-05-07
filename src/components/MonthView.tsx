@@ -206,7 +206,7 @@ const MonthView = () => {
 
                   {/* VECKOSALDO */}
                   <div className="w-20 text-xs text-right pt-2">
-                    <div>{weekTotal}h</div>
+                    <div>{weekTotal.toFixed(1)}h</div>
                     <div className="w-full bg-gray-200 h-1.5 rounded mt-1">
                       <div
                         className="h-1.5 rounded bg-blue-500"
@@ -225,8 +225,8 @@ const MonthView = () => {
                               : "text-gray-500"
                         }
                       >
-                        ({diff > 0 && `+${diff}h övertid`}
-                        {diff < 0 && `${Math.abs(diff)}h kvar`}
+                        ({diff > 0 && `+${diff.toFixed(1)}h övertid`}
+                        {diff < 0 && `${Math.abs(diff).toFixed(1)}h kvar`}
                         {diff === 0 && "klart"})
                       </div>
                     )}
