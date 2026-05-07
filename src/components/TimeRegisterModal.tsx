@@ -4,6 +4,7 @@ interface Props {
   onSave: (value: TimeEntry) => void;
   onClose: () => void;
   initialEntry?: TimeEntry;
+  onDelete?: () => void;
 }
 
 interface TimeEntry {
@@ -13,7 +14,12 @@ interface TimeEntry {
   endTime?: string;
 }
 
-const TimeRegisterModal = ({ onSave, onClose, initialEntry }: Props) => {
+const TimeRegisterModal = ({
+  onSave,
+  onClose,
+  initialEntry,
+  onDelete,
+}: Props) => {
   const [value, setValue] = useState("");
   const [type, setType] = useState("work");
   const [startTime, setStartTime] = useState("");
@@ -100,6 +106,14 @@ const TimeRegisterModal = ({ onSave, onClose, initialEntry }: Props) => {
         >
           Avbryt
         </button>
+        {initialEntry && (
+          <button
+            onClick={onDelete}
+            className="bg-red-500 text-white px-4 py-2 rounded ml-2"
+          >
+            Radera
+          </button>
+        )}
       </div>
     </div>
   );
