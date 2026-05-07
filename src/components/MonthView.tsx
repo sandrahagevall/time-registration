@@ -159,7 +159,7 @@ const MonthView = () => {
                                 {entries[day]
                                   ?.filter((e) => e.type === "work")
                                   .reduce(
-                                    (sum, e) => sum + getEntryHours(e),
+                                    (sum, e) => sum + formatHours(getEntryHours(e)),
                                     0,
                                   ) ?? 0}
                                 h
@@ -180,12 +180,12 @@ const MonthView = () => {
                                   entry.startTime &&
                                   entry.endTime ? (
                                     <>
-                                      {getEntryHours(entry)}h ({entry.startTime}
+                                      {formatHours(getEntryHours(entry))}h ({entry.startTime}
                                       -{entry.endTime})
                                     </>
                                   ) : (
                                     <>
-                                      {getEntryHours(entry)}h - {entry.type}
+                                      {formatHours(getEntryHours(entry))}h - {entry.type}
                                     </>
                                   )}
                                 </div>
