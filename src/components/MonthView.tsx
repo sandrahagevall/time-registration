@@ -19,6 +19,9 @@ const MonthView = () => {
   });
   const [showModal, setShowModal] = useState(false);
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
+  const [editIndex, setEditIndex] = useState<number | null>(null);
+
+  console.log("RENDER editIndex:", editIndex);
 
   useEffect(() => {
     localStorage.setItem("entries", JSON.stringify(entries));
@@ -162,9 +165,26 @@ const MonthView = () => {
                               {entries[day]?.map((entry, i) => (
                                 <div
                                   key={i}
-                                  className="text-[10px] text-gray-400"
+                                  onClick={() => {
+                                    console.log("CLICKED ENTRY INDEX:", i);
+                                    setSelectedDay(day);
+                                    setEditIndex(i);
+                                    setShowModal(true);
+                                  }}
+                                  className="cursor-pointer p-1 rounded hover:bg-gray-100 text-xs"
                                 >
-                                  {entry.hours}h - {entry.type}
+                                  {entry.type === "work" &&
+                                  entry.startTime &&
+                                  entry.endTime ? (
+                                    <>
+                                      {getEntryHours(entry)}h ({entry.startTime}
+                                      -{entry.endTime})
+                                    </>
+                                  ) : (
+                                    <>
+                                      {getEntryHours(entry)}h - {entry.type}
+                                    </>
+                                  )}
                                 </div>
                               ))}
 
@@ -226,14 +246,30 @@ const MonthView = () => {
         {showModal && (
           <TimeRegisterModal
             onSave={(value) => {
+              console.log("SAVING editIndex:", editIndex);
               if (!selectedDay) return;
-              setEntries((prev) => ({
-                ...prev,
-                [selectedDay]: [...(prev[selectedDay] || []), value],
-              }));
+
+              setEntries((prev) => {
+                const dayEntries = [...(prev[selectedDay] || [])];
+                if (editIndex !== null) {
+                  dayEntries[editIndex] = value;
+                } else {
+                  dayEntries.push(value);
+                }
+                return {
+                  ...prev,
+                  [selectedDay]: dayEntries,
+                };
+              });
               setShowModal(false);
+              setEditIndex(null);
             }}
             onClose={() => setShowModal(false)}
+            initialEntry={
+              selectedDay !== null && editIndex !== null
+                ? entries[selectedDay]?.[editIndex]
+                : undefined
+            }
           />
         )}
       </div>

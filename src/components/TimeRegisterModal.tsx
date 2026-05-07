@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface Props {
   onSave: (value: TimeEntry) => void;
   onClose: () => void;
+  initialEntry?: TimeEntry;
 }
 
 interface TimeEntry {
@@ -12,11 +13,20 @@ interface TimeEntry {
   endTime?: string;
 }
 
-const TimeRegisterModal = ({ onSave, onClose }: Props) => {
+const TimeRegisterModal = ({ onSave, onClose, initialEntry }: Props) => {
   const [value, setValue] = useState("");
   const [type, setType] = useState("work");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
+
+  useEffect(() => {
+    if (initialEntry) {
+      setValue(initialEntry.hours?.toString() || "");
+      setType(initialEntry.type);
+      setStartTime(initialEntry.startTime || "");
+      setEndTime(initialEntry.endTime || "");
+    }
+  }, [initialEntry]);
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
