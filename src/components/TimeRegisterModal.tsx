@@ -109,7 +109,7 @@ const TimeRegisterModal = ({
         {initialEntry && (
           <button
             onClick={onDelete}
-            className="bg-red-500 text-white px-4 py-2 rounded ml-2"
+            className="bg-red-500 text-white px-4 py-2 rounded ml-2 cursor-pointer"
           >
             Radera
           </button>

@@ -74,7 +74,7 @@ const MonthView = () => {
   const weeklyHours = 24;
 
   const formatHours = (h: number) =>
-  Number.isInteger(h) ? h : Number(h.toFixed(1));
+    Number.isInteger(h) ? h : Number(h.toFixed(1));
 
   const getWeekTotal = (week: Date[]) => {
     return week.reduce((sum, date) => {
@@ -159,7 +159,8 @@ const MonthView = () => {
                                 {entries[day]
                                   ?.filter((e) => e.type === "work")
                                   .reduce(
-                                    (sum, e) => sum + formatHours(getEntryHours(e)),
+                                    (sum, e) =>
+                                      sum + formatHours(getEntryHours(e)),
                                     0,
                                   ) ?? 0}
                                 h
@@ -180,12 +181,13 @@ const MonthView = () => {
                                   entry.startTime &&
                                   entry.endTime ? (
                                     <>
-                                      {formatHours(getEntryHours(entry))}h ({entry.startTime}
-                                      -{entry.endTime})
+                                      {formatHours(getEntryHours(entry))}h (
+                                      {entry.startTime}-{entry.endTime})
                                     </>
                                   ) : (
                                     <>
-                                      {formatHours(getEntryHours(entry))}h - {entry.type}
+                                      {formatHours(getEntryHours(entry))}h -{" "}
+                                      {entry.type}
                                     </>
                                   )}
                                 </div>
@@ -264,6 +266,23 @@ const MonthView = () => {
                   [selectedDay]: dayEntries,
                 };
               });
+              setShowModal(false);
+              setEditIndex(null);
+            }}
+            onDelete={() => {
+              if (selectedDay === null || editIndex === null) return;
+
+              setEntries((prev) => {
+                const dayEntries = [...(prev[selectedDay] || [])];
+
+                dayEntries.splice(editIndex, 1);
+
+                return {
+                  ...prev,
+                  [selectedDay]: dayEntries,
+                };
+              });
+
               setShowModal(false);
               setEditIndex(null);
             }}
