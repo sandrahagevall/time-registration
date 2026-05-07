@@ -51,6 +51,9 @@ const getEntryHours = (entry: TimeEntry) => {
   return entry.hours || 0;
 };
 
+  const formatHours = (h: number) =>
+  Number.isInteger(h) ? h : Number(h.toFixed(1));
+
 const Statistics = ({ entries, year, month }: StatsProps) => {
   const allEntries = Object.values(entries).flat();
 
@@ -72,12 +75,12 @@ const Statistics = ({ entries, year, month }: StatsProps) => {
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const targetHours = Math.round((daysInMonth / 7) * weeklyHours);
 
-  const workedHours = sumByType(allEntries, "work");
-  const leaveHours = sumByType(allEntries, "leave");
-  const compTimeHours = sumByType(allEntries, "compTime");
-  const sickHours = sumByType(allEntries, "sick");
-  const parentalLeaveHours = sumByType(allEntries, "parentalLeave");
-  const homeWithChildHours = sumByType(allEntries, "homeWithChild");
+  const workedHours = formatHours(sumByType(allEntries, "work"));
+  const leaveHours = formatHours(sumByType(allEntries, "leave"));
+  const compTimeHours = formatHours(sumByType(allEntries, "compTime"));
+  const sickHours = formatHours(sumByType(allEntries, "sick"));
+  const parentalLeaveHours = formatHours(sumByType(allEntries, "parentalLeave"));
+  const homeWithChildHours = formatHours(sumByType(allEntries, "homeWithChild"));
 
   const balance = workedHours - targetHours;
 
