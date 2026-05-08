@@ -85,7 +85,7 @@ const Statistics = ({ entries, year, month }: StatsProps) => {
   const balance = workedHours - targetHours;
 
   return (
-    <div className="w-full max-w-sm md:w-64 bg-white border rounded-2xl p-5 shadow-sm h-fit">
+    <div className="w-full max-w-sm md:w-64 bg-white border border-gray-300 rounded-2xl p-5 shadow-sm h-fit">
       <h3 className="text-sm font-semibold text-gray-500 mb-3">Statistik</h3>
 
       <div className="space-y-3 text-sm">

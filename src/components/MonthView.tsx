@@ -146,7 +146,7 @@ const MonthView = ({ entries, setEntries }: Props) => {
                       return (
                         <div
                           key={index}
-                          className={`h-28 border rounded-xl p-2 relative bg-white shadow-sm hover:shadow-md transition ${
+                          className={`h-28 border border-gray-300 rounded-xl p-2 relative bg-white shadow-sm hover:shadow-md transition ${
                             !isCurrentMonth ? "opacity-30" : ""
                           }`}
                         >
@@ -249,7 +249,6 @@ const MonthView = ({ entries, setEntries }: Props) => {
         {showModal && (
           <TimeRegisterModal
             onSave={(value) => {
-              console.log("SAVING editIndex:", editIndex);
               if (!selectedDay) return;
 
               setEntries((prev) => {

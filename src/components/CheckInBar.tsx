@@ -142,7 +142,7 @@ const CheckInBar = ({ setEntries }: Props) => {
   };
 
   return (
-    <div className="mb-4 p-4 md:p-5 rounded-2xl bg-linear-to-r from-blue-50 to-indigo-50 border shadow-sm flex items-center justify-between">
+    <div className="mb-4 p-4 md:p-5 rounded-2xl bg-linear-to-r from-blue-50 to-indigo-50 border border-gray-300 shadow-sm flex items-center justify-between">
       <div>
         <div className="text-xs uppercase tracking-wide text-gray-500">
           Idag

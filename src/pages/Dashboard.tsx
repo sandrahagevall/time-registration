@@ -23,7 +23,7 @@ const Dashboard = () => {
 
       <div className="flex flex-col lg:flex-row gap-6">
 
-      <div className="flex-1 bg-white border rounded-2xl shadow-sm p-4 md:p-6">
+      <div className="flex-1 bg-white border border-gray-300 rounded-2xl shadow-sm p-4 md:p-6">
         <MonthView entries={entries} setEntries={setEntries} />
       </div>
       </div>
