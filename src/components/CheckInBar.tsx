@@ -18,6 +18,26 @@ const CheckInBar = ({ setEntries }: Props) => {
 });
   const [currentTime, setCurrentTime] = useState(new Date());
 
+  const calculateHours = (startTime: string, endTime: string) => {
+  const [sh, sm] = startTime.split(":").map(Number);
+  const [eh, em] = endTime.split(":").map(Number);
+
+  const start = new Date();
+  start.setHours(sh, sm, 0, 0);
+
+  const end = new Date();
+  end.setHours(eh, em, 0, 0);
+
+  let hours = (end.getTime() - start.getTime()) / (1000 * 60 * 60);
+
+  // 🍔 lunch
+  if (hours > 5) {
+    hours -= 0.5;
+  }
+
+  return hours;
+};
+
   useEffect(() => { 
     if (activeSession) {
       localStorage.setItem("activeSession", JSON.stringify(activeSession));
@@ -34,6 +54,38 @@ const CheckInBar = ({ setEntries }: Props) => {
     return () => clearInterval(timer);
   }, []);
 
+  useEffect(() => {
+  if (!activeSession) return;
+
+  const today = new Date().getDate();
+
+  if (activeSession.day !== today) {
+    const endTime = "23:59";
+
+    const hours = calculateHours(
+      activeSession.startTime,
+      endTime
+    );
+
+    const newEntry = {
+      type: "work",
+      startTime: activeSession.startTime,
+      endTime,
+      hours,
+    };
+
+    setEntries((prev) => ({
+      ...prev,
+      [activeSession.day]: [
+        ...(prev[activeSession.day] || []),
+        newEntry,
+      ],
+    }));
+
+    setActiveSession(null);
+  }
+}, []);
+
   const formattedTime = currentTime.toLocaleTimeString("sv-SE", {
   hour: "2-digit",
   minute: "2-digit",
@@ -42,19 +94,11 @@ const CheckInBar = ({ setEntries }: Props) => {
   const getElapsedTime = () => {
     if (!activeSession) return 0;
 
-    const [sh, sm] = activeSession.startTime.split(":").map(Number);
-    const start = new Date();
-    start.setHours(sh, sm, 0, 0);
+    const nowTime = currentTime.toTimeString().slice(0, 5);
 
-    const now = currentTime;
+  return calculateHours(activeSession.startTime, nowTime);
+};
 
-    let hours = (now.getTime() - start.getTime()) / (1000 * 60 * 60);
-
-    if (hours > 5) {
-      hours -= 0.5;
-    }
-    return hours;
-  };
 
   const formattedElapsed = (hours: number) => {
     const h = Math.floor(hours);
