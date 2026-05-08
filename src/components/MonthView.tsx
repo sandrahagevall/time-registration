@@ -91,12 +91,11 @@ const MonthView = ({ entries, setEntries }: Props) => {
     }, 0);
   };
 
-  const getEntryHours = (entry: {
-    hours?: number;
-    startTime?: string;
-    endTime?: string;
-    type: string;
-  }) => {
+  const getEntryHours = (entry: TimeEntry) => {
+    if (entry.hours !== undefined) {
+      return entry.hours;
+    }
+
     if (entry.type === "work" && entry.startTime && entry.endTime) {
       const [sh, sm] = entry.startTime.split(":").map(Number);
       const [eh, em] = entry.endTime.split(":").map(Number);

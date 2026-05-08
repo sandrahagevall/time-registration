@@ -1,9 +1,16 @@
 import { useState, useEffect } from "react";
 
+type TimeEntry = {
+  type: string;
+  hours?: number;
+  startTime?: string;
+  endTime?: string;
+};
+
 interface Props {
   setEntries: React.Dispatch<
     React.SetStateAction<{
-      [key: number]: any[];
+      [key: number]: TimeEntry[];
     }>
   >;
 }
