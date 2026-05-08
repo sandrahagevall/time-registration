@@ -157,14 +157,24 @@ const CheckInBar = ({ setEntries }: Props) => {
         {activeSession ? (
           <button
             onClick={handleCheckOut}
-            className="bg-rose-500 hover:bg-rose-600 text-white px-3 py-1 rounded cursor-pointer"
+            className="bg-rose-500 hover:bg-rose-600 text-white cursor-pointer px-4 py-2 
+              rounded-lg 
+              text-sm font-medium 
+              shadow-sm 
+              transition
+           "
           >
             Check out
           </button>
         ) : (
           <button
             onClick={handleCheckIn}
-            className="bg-emerald-500 hover:bg-emerald-600 text-white px-3 py-1 rounded cursor-pointer"
+            className="bg-emerald-500 hover:bg-emerald-600 text-white cursor-pointer px-4 py-2 
+              rounded-lg 
+              text-sm font-medium 
+              shadow-sm 
+              transition
+            "
           >
             Check in
           </button>
