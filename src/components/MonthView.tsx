@@ -1,7 +1,18 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Plus } from "lucide-react";
 import TimeRegisterModal from "./TimeRegisterModal";
 import Statistics from "./Statitics";
+
+interface Props {
+  entries: {
+    [key: number]: TimeEntry[];
+  };
+  setEntries: React.Dispatch<
+    React.SetStateAction<{
+      [key: number]: TimeEntry[];
+    }>
+  >;
+}
 
 type TimeEntry = {
   type: string;
@@ -10,22 +21,11 @@ type TimeEntry = {
   endTime?: string;
 };
 
-const MonthView = () => {
-  const [entries, setEntries] = useState<{
-    [key: number]: TimeEntry[];
-  }>(() => {
-    const saved = localStorage.getItem("entries");
-    return saved ? JSON.parse(saved) : {};
-  });
+const MonthView = ({ entries, setEntries }: Props) => {
   const [showModal, setShowModal] = useState(false);
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [editIndex, setEditIndex] = useState<number | null>(null);
 
-  console.log("RENDER editIndex:", editIndex);
-
-  useEffect(() => {
-    localStorage.setItem("entries", JSON.stringify(entries));
-  }, [entries]);
 
   const currentDate = new Date();
   const year = currentDate.getFullYear();
@@ -109,7 +109,7 @@ const MonthView = () => {
 
     return entry.hours || 0;
   };
-
+  
   return (
     <div>
       <h2 className="text-xl font-bold mb-4">
@@ -139,7 +139,7 @@ const MonthView = () => {
                   </div>
 
                   {/* DAGAR */}
-                  <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-2 md:gap-3 flex-1">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 xl:grid-cols-7 gap-2 md:gap-3 flex-1">
                     {week.map((date, index) => {
                       const day = date.getDate();
                       const isCurrentMonth = date.getMonth() === month;
