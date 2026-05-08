@@ -111,14 +111,14 @@ const CheckInBar = ({ setEntries }: Props) => {
         {activeSession ? (
           <button
             onClick={handleCheckOut}
-            className="bg-red-500 text-white px-3 py-1 rounded"
+            className="bg-red-500 text-white px-3 py-1 rounded cursor-pointer"
           >
             Check out
           </button>
         ) : (
           <button
             onClick={handleCheckIn}
-            className="bg-green-500 text-white px-3 py-1 rounded"
+            className="bg-green-500 text-white px-3 py-1 rounded cursor-pointer"
           >
             Check in
           </button>
