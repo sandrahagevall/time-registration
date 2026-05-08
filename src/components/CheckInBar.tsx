@@ -10,10 +10,21 @@ interface Props {
 
 const CheckInBar = ({ setEntries }: Props) => {
   const [activeSession, setActiveSession] = useState<{
-    day: number;
-    startTime: string;
-  } | null>(null);
+  day: number;
+  startTime: string;
+} | null>(() => {
+  const saved = localStorage.getItem("activeSession");
+  return saved ? JSON.parse(saved) : null;
+});
   const [currentTime, setCurrentTime] = useState(new Date());
+
+  useEffect(() => { 
+    if (activeSession) {
+      localStorage.setItem("activeSession", JSON.stringify(activeSession));
+    } else {
+      localStorage.removeItem("activeSession");
+    }
+  }, [activeSession]);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -37,9 +48,12 @@ const CheckInBar = ({ setEntries }: Props) => {
 
     const now = currentTime;
 
-    const diff = now.getTime() - start.getTime();
+    let hours = (now.getTime() - start.getTime()) / (1000 * 60 * 60);
 
-    return diff / (1000 * 60 * 60);
+    if (hours > 5) {
+      hours -= 0.5;
+    }
+    return hours;
   };
 
   const formattedElapsed = (hours: number) => {
@@ -66,11 +80,13 @@ const CheckInBar = ({ setEntries }: Props) => {
 
     const now = new Date();
     const endTime = now.toTimeString().slice(0, 5);
+    const hours = getElapsedTime();
 
     const newEntry = {
       type: "work",
       startTime: activeSession.startTime,
       endTime,
+      hours,
     };
 
     setEntries((prev) => ({
