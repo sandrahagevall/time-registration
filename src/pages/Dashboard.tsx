@@ -14,7 +14,7 @@ const Dashboard = () => {
 
 
   return (
-    <div className="p-4 md:p-8 space-y-6">
+    <div className="p-4 md:p-8 space-y-6 bg-gray-50">
       <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
         Tidsregistrering
       </h1>
