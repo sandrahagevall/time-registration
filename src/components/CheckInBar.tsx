@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface Props {
   setEntries: React.Dispatch<
@@ -13,6 +13,40 @@ const CheckInBar = ({ setEntries }: Props) => {
     day: number;
     startTime: string;
   } | null>(null);
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  const formattedTime = currentTime.toLocaleTimeString("sv-SE", {
+  hour: "2-digit",
+  minute: "2-digit",
+  })
+  
+  const getElapsedTime = () => {
+    if (!activeSession) return 0;
+
+    const [sh, sm] = activeSession.startTime.split(":").map(Number);
+    const start = new Date();
+    start.setHours(sh, sm, 0, 0);
+
+    const now = currentTime;
+
+    const diff = now.getTime() - start.getTime();
+
+    return diff / (1000 * 60 * 60);
+  };
+
+  const formattedElapsed = (hours: number) => {
+    const h = Math.floor(hours);
+    const m = Math.floor((hours - h) * 60);
+    return `${h}h ${m}m`;
+  }
 
   const today = new Date();
   const todayDay = today.getDate();
@@ -54,6 +88,7 @@ const CheckInBar = ({ setEntries }: Props) => {
         <div className="font-semibold">
           {todayDay} {today.toLocaleString("sv-SE", { month: "long" })}
         </div>
+        <div className="text-xs text-gray-400">{formattedTime}</div>
       </div>
 
       <div>
@@ -72,6 +107,12 @@ const CheckInBar = ({ setEntries }: Props) => {
             Check in
           </button>
         )}
+        {activeSession && (
+          <div className="text-sm text-gray-500 mt-1">
+            {formattedElapsed(getElapsedTime())} 
+          </div>
+        )}
+
       </div>
     </div>
   );
