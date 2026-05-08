@@ -120,7 +120,7 @@ const MonthView = ({ entries, setEntries }: Props) => {
       <div className="flex flex-col md:flex-row gap-4 md:gap-6">
         {/* VÄNSTER: Kalender + rubrik */}
         <div className="flex-1">
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-3 md:gap-4">
             {weeks.map((week, i) => {
               const weekNumber = getWeekNumber(week[0]);
               const weekTotal = getWeekTotal(week);
@@ -130,7 +130,7 @@ const MonthView = ({ entries, setEntries }: Props) => {
               return (
                 <div
                   key={i}
-                  className="flex flex-col md:flex-row gap-2 md:gap-4 bg-gray-50 md:bg-transparent rounded-lg p-2 md:p-0"
+                  className="flex flex-col md:flex-row gap-2 md:gap-4 bg-gray-50 md:bg-transparent rounded-xl p-3 md:p-0"
                 >
                   {/* VECKONUMMER */}
                   <div className="text-xs text-gray-500 mb-1 md:mb-0 md:w-10 md:pt-2">
@@ -146,15 +146,15 @@ const MonthView = ({ entries, setEntries }: Props) => {
                       return (
                         <div
                           key={index}
-                          className={`h-28 md:h-24 border rounded-lg p-2 relative bg-white ${
+                          className={`h-28 border rounded-xl p-2 relative bg-white shadow-sm hover:shadow-md transition ${
                             !isCurrentMonth ? "opacity-30" : ""
                           }`}
                         >
-                          <div className="text-sm font-semibold">{day}</div>
+                          <div className="text-sm font-semibold text-gray-800">{day}</div>
 
                           {isCurrentMonth && (
                             <>
-                              <div className="text-xs text-gray-500">
+                              <div className="text-xs text-gray-500 mt-0.5 px-0.5">
                                 {entries[day]
                                   ?.filter((e) => e.type === "work")
                                   .reduce(
@@ -169,7 +169,6 @@ const MonthView = ({ entries, setEntries }: Props) => {
                                 <div
                                   key={i}
                                   onClick={() => {
-                                    console.log("CLICKED ENTRY INDEX:", i);
                                     setSelectedDay(day);
                                     setEditIndex(i);
                                     setShowModal(true);

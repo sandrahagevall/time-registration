@@ -1,5 +1,39 @@
 @import "tailwindcss";
 
+@layer base {
+
+  /* :root {
+    --text-primary: #505050;
+    --text-secondary: white;
+    --bg-color: white;
+    --card-bg: white;
+    --navbar-bg: #0066D2;
+    --navbar-selected: #1b8aff;
+    --activity-bg: white;
+    --day-bg: white;
+    --form-bg: white;
+    --btn-primary: #FF6200;
+    --btn-secondary: #FF7410;
+    --qa-primary: #0066D2;
+
+    --radius-card: 8px;
+    --shadow-card: 0 0 10px rgba(0, 0, 0, 0.1);
+
+  } */
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    ;
+  }
+
+  body {
+    font-family: sans-serif;
+  }
+}
+
+
 /* :root {
   --text: #6b6375;
   --text-h: #08060d;

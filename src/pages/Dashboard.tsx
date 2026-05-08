@@ -14,14 +14,18 @@ const Dashboard = () => {
 
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">
+    <div className="p-4 md:p-8 space-y-6">
+      <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
         Tidsregistrering
       </h1>
 
       <CheckinBar setEntries={setEntries} />
-      <div className="border p-4 rounded-xl">
+
+      <div className="flex flex-col lg:flex-row gap-6">
+
+      <div className="flex-1 bg-white border rounded-2xl shadow-sm p-4 md:p-6">
         <MonthView entries={entries} setEntries={setEntries} />
+      </div>
       </div>
     </div>
   )
