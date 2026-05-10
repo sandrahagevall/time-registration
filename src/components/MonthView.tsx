@@ -3,6 +3,13 @@ import { Plus } from "lucide-react";
 import TimeRegisterModal from "./TimeRegisterModal";
 import Statistics from "./Statitics";
 
+type TimeEntry = {
+  type: string;
+  hours?: number;
+  startTime?: string;
+  endTime?: string;
+};
+
 interface Props {
   entries: {
     [key: number]: TimeEntry[];
@@ -13,13 +20,6 @@ interface Props {
     }>
   >;
 }
-
-type TimeEntry = {
-  type: string;
-  hours?: number;
-  startTime?: string;
-  endTime?: string;
-};
 
 const MonthView = ({ entries, setEntries }: Props) => {
   const [showModal, setShowModal] = useState(false);
@@ -155,13 +155,15 @@ const MonthView = ({ entries, setEntries }: Props) => {
                           {isCurrentMonth && (
                             <>
                               <div className="text-xs text-gray-500 mt-0.5 px-0.5">
-                                {entries[day]
-                                  ?.filter((e) => e.type === "work")
-                                  .reduce(
-                                    (sum, e) =>
-                                      sum + formatHours(getEntryHours(e)),
-                                    0,
-                                  ) ?? 0}
+                                {formatHours(
+                                  entries[day]
+                                    ?.filter((e) => e.type === "work")
+                                    .reduce(
+                                      (sum, e) =>
+                                        sum + getEntryHours(e),
+                                      0,
+                                    ) ?? 0
+                                )}
                                 h
                               </div>
 
@@ -179,8 +181,7 @@ const MonthView = ({ entries, setEntries }: Props) => {
                                   entry.startTime &&
                                   entry.endTime ? (
                                     <>
-                                      {formatHours(getEntryHours(entry))}h (
-                                      {entry.startTime}-{entry.endTime})
+                                     {entry.startTime}-{entry.endTime}
                                     </>
                                   ) : (
                                     <>
@@ -195,6 +196,7 @@ const MonthView = ({ entries, setEntries }: Props) => {
                                 <Plus
                                   onClick={() => {
                                     setSelectedDay(day);
+                                    setEditIndex(null);
                                     setShowModal(true);
                                   }}
                                   className="w-5 h-5 text-blue-500 cursor-pointer hover:scale-110 bg-white rounded-full shadow p-0.5"
@@ -283,7 +285,10 @@ const MonthView = ({ entries, setEntries }: Props) => {
               setShowModal(false);
               setEditIndex(null);
             }}
-            onClose={() => setShowModal(false)}
+            onClose={() => {
+              setShowModal(false)
+              setEditIndex(null);
+            }}
             initialEntry={
               selectedDay !== null && editIndex !== null
                 ? entries[selectedDay]?.[editIndex]

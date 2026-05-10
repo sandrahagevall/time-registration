@@ -86,7 +86,6 @@ const TimeRegisterModal = ({
               type === "work"
                 ? {
                     type,
-                    hours: 0, // fallback (kan tas bort senare)
                     startTime,
                     endTime,
                   }
