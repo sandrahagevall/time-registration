@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus, ChevronLeft, ChevronRight } from "lucide-react";
+import { Plus, ChevronLeft, ChevronRight, FileSpreadsheet } from "lucide-react";
 import TimeRegisterModal from "./TimeRegisterModal";
 import Statistics from "./Statitics";
 import exportToExcel from "../utils/exportToExcel";
@@ -114,11 +114,25 @@ const MonthView = ({ entries, setEntries }: Props) => {
     <div>
       <div className="flex justify-end">
         <button
-        onClick={() => exportToExcel(entries)}
-        className="bg-blue-500 text-white px-4 py-2 rounded mb-6 cursor-pointer"
-      >
-        Exportera till Excel
-      </button>
+          onClick={() => exportToExcel(entries)}
+          className="
+            inline-flex items-center gap-2
+            bg-blue-600 hover:bg-blue-700
+            text-white font-medium
+            px-4 py-2.5
+            rounded-xl
+            shadow-sm hover:shadow-md
+            transition-all
+            active:scale-95
+            cursor-pointer
+            w-full sm:w-auto
+            justify-center
+            mb-6
+          "
+        >
+          <FileSpreadsheet size={18} />
+          Exportera till Excel
+        </button>
       </div>
       <div className="flex items-center justify-center gap-6 mb-12">
         <button
@@ -189,7 +203,7 @@ const MonthView = ({ entries, setEntries }: Props) => {
                           } ${isToday ? "border-blue-500 ring-2 ring-blue-400/50 shadow-[0_0_12px_rgba(59,130,246,0.35)]" : ""}`}
                         >
                           <div className="text-sm font-semibold text-gray-800">
-                            {day} 
+                            {day}
                           </div>
 
                           {isCurrentMonth && (
