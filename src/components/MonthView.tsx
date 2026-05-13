@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus } from "lucide-react";
+import { Plus, ChevronLeft, ChevronRight } from "lucide-react";
 import TimeRegisterModal from "./TimeRegisterModal";
 import Statistics from "./Statitics";
 import exportToExcel from "../utils/exportToExcel";
@@ -115,7 +115,7 @@ const MonthView = ({ entries, setEntries }: Props) => {
       <div className="flex justify-end">
         <button
         onClick={() => exportToExcel(entries)}
-        className="bg-blue-500 text-white px-4 py-2 rounded mb-6"
+        className="bg-blue-500 text-white px-4 py-2 rounded mb-6 cursor-pointer"
       >
         Exportera till Excel
       </button>
@@ -127,9 +127,10 @@ const MonthView = ({ entries, setEntries }: Props) => {
               new Date(currentDate.getFullYear(), currentDate.getMonth() - 1),
             )
           }
-          className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300"
+          className="p-2 rounded-full bg-gray-50 hover:bg-gray-100 
+           transition border border-transparent hover:border-gray-200 cursor-pointer"
         >
-          ←
+          <ChevronLeft className="w-5 h-5 text-gray-600" />
         </button>
 
         <h2 className="text-xl font-bold">
@@ -145,9 +146,10 @@ const MonthView = ({ entries, setEntries }: Props) => {
               new Date(currentDate.getFullYear(), currentDate.getMonth() + 1),
             )
           }
-          className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300"
+          className="p-2 rounded-full bg-gray-50 hover:bg-gray-100 
+           transition border border-transparent hover:border-gray-200 cursor-pointer"
         >
-          →
+          <ChevronRight className="w-5 h-5 text-gray-600" />
         </button>
       </div>
       <div className="flex flex-col md:flex-row gap-4 md:gap-6">
@@ -175,6 +177,8 @@ const MonthView = ({ entries, setEntries }: Props) => {
                     {week.map((date, index) => {
                       const day = date.getDate();
                       const key = date.toLocaleDateString("sv-SE");
+                      const today = new Date().toLocaleDateString("sv-SE");
+                      const isToday = key === today;
                       const isCurrentMonth = date.getMonth() === month;
 
                       return (
@@ -182,7 +186,7 @@ const MonthView = ({ entries, setEntries }: Props) => {
                           key={index}
                           className={`h-28 border border-gray-300 rounded-xl p-2 relative bg-white shadow-sm hover:shadow-md transition ${
                             !isCurrentMonth ? "opacity-30" : ""
-                          }`}
+                          } ${isToday ? "border-blue-500 ring-2 ring-blue-400/50 shadow-[0_0_12px_rgba(59,130,246,0.35)]" : ""}`}
                         >
                           <div className="text-sm font-semibold text-gray-800">
                             {day} 
