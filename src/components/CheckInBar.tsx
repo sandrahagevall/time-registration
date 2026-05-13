@@ -10,19 +10,20 @@ type TimeEntry = {
 interface Props {
   setEntries: React.Dispatch<
     React.SetStateAction<{
-      [key: number]: TimeEntry[];
+      [key: string]: TimeEntry[];
     }>
   >;
 }
 
 const CheckInBar = ({ setEntries }: Props) => {
   const [activeSession, setActiveSession] = useState<{
-    day: number;
+    date: string;
     startTime: string;
   } | null>(() => {
     const saved = localStorage.getItem("activeSession");
     return saved ? JSON.parse(saved) : null;
   });
+
   const [currentTime, setCurrentTime] = useState(new Date());
 
   const calculateHours = (startTime: string, endTime: string) => {
@@ -37,7 +38,6 @@ const CheckInBar = ({ setEntries }: Props) => {
 
     let hours = (end.getTime() - start.getTime()) / (1000 * 60 * 60);
 
-    // 🍔 lunch
     if (hours > 5) {
       hours -= 0.5;
     }
@@ -45,6 +45,7 @@ const CheckInBar = ({ setEntries }: Props) => {
     return hours;
   };
 
+  // 💾 spara session
   useEffect(() => {
     if (activeSession) {
       localStorage.setItem("activeSession", JSON.stringify(activeSession));
@@ -53,6 +54,7 @@ const CheckInBar = ({ setEntries }: Props) => {
     }
   }, [activeSession]);
 
+  // ⏱ live clock
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(new Date());
@@ -61,15 +63,19 @@ const CheckInBar = ({ setEntries }: Props) => {
     return () => clearInterval(timer);
   }, []);
 
+  // 🌙 auto checkout vid ny dag
   useEffect(() => {
     if (!activeSession) return;
 
-    const today = new Date().getDate();
+    const todayKey = new Date().toLocaleDateString("sv-SE");
 
-    if (activeSession.day !== today) {
+    if (activeSession.date !== todayKey) {
       const endTime = "23:59";
 
-      const hours = calculateHours(activeSession.startTime, endTime);
+      const hours = calculateHours(
+        activeSession.startTime,
+        endTime
+      );
 
       const newEntry = {
         type: "work",
@@ -80,7 +86,10 @@ const CheckInBar = ({ setEntries }: Props) => {
 
       setEntries((prev) => ({
         ...prev,
-        [activeSession.day]: [...(prev[activeSession.day] || []), newEntry],
+        [activeSession.date]: [
+          ...(prev[activeSession.date] || []),
+          newEntry,
+        ],
       }));
 
       setActiveSession(null);
@@ -109,16 +118,19 @@ const CheckInBar = ({ setEntries }: Props) => {
   const today = new Date();
   const todayDay = today.getDate();
 
+  // ✅ CHECK IN
   const handleCheckIn = () => {
     const now = new Date();
     const time = now.toTimeString().slice(0, 5);
+    const todayKey = now.toLocaleDateString("sv-SE");
 
     setActiveSession({
-      day: todayDay,
+      date: todayKey,
       startTime: time,
     });
   };
 
+  // ✅ CHECK OUT
   const handleCheckOut = () => {
     if (!activeSession) return;
 
@@ -135,7 +147,10 @@ const CheckInBar = ({ setEntries }: Props) => {
 
     setEntries((prev) => ({
       ...prev,
-      [activeSession.day]: [...(prev[activeSession.day] || []), newEntry],
+      [activeSession.date]: [
+        ...(prev[activeSession.date] || []),
+        newEntry,
+      ],
     }));
 
     setActiveSession(null);
@@ -157,28 +172,19 @@ const CheckInBar = ({ setEntries }: Props) => {
         {activeSession ? (
           <button
             onClick={handleCheckOut}
-            className="bg-rose-500 hover:bg-rose-600 text-white cursor-pointer px-4 py-2 
-              rounded-lg 
-              text-sm font-medium 
-              shadow-sm 
-              transition
-           "
+            className="bg-rose-500 hover:bg-rose-600 text-white px-4 py-2 rounded-lg text-sm font-medium shadow-sm transition"
           >
             Check out
           </button>
         ) : (
           <button
             onClick={handleCheckIn}
-            className="bg-emerald-500 hover:bg-emerald-600 text-white cursor-pointer px-4 py-2 
-              rounded-lg 
-              text-sm font-medium 
-              shadow-sm 
-              transition
-            "
+            className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-medium shadow-sm transition"
           >
             Check in
           </button>
         )}
+
         {activeSession && (
           <div className="text-sm font-medium text-gray-700 mt-1">
             {formattedElapsed(getElapsedTime())}

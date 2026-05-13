@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Plus } from "lucide-react";
 import TimeRegisterModal from "./TimeRegisterModal";
 import Statistics from "./Statitics";
+import exportToExcel from "../utils/exportToExcel";
 
 type TimeEntry = {
   type: string;
@@ -12,22 +13,22 @@ type TimeEntry = {
 
 interface Props {
   entries: {
-    [key: number]: TimeEntry[];
+    [key: string]: TimeEntry[];
   };
   setEntries: React.Dispatch<
     React.SetStateAction<{
-      [key: number]: TimeEntry[];
+      [key: string]: TimeEntry[];
     }>
   >;
 }
 
 const MonthView = ({ entries, setEntries }: Props) => {
   const [showModal, setShowModal] = useState(false);
-  const [selectedDay, setSelectedDay] = useState<number | null>(null);
+  const [selectedDay, setSelectedDay] = useState<string | null>(null);
   const [editIndex, setEditIndex] = useState<number | null>(null);
+  const [currentDate, setCurrentDate] = useState(new Date());
 
-
-  const currentDate = new Date();
+  // const currentDate = new Date();
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
 
@@ -80,10 +81,10 @@ const MonthView = ({ entries, setEntries }: Props) => {
     return week.reduce((sum, date) => {
       if (date.getMonth() !== month) return sum;
 
-      const day = date.getDate();
+      const key = date.toLocaleDateString("sv-SE");
 
       const dayTotal =
-        entries[day]
+        entries[key]
           ?.filter((e) => e.type === "work")
           .reduce((s, e) => s + getEntryHours(e), 0) ?? 0;
 
@@ -108,15 +109,47 @@ const MonthView = ({ entries, setEntries }: Props) => {
 
     return entry.hours || 0;
   };
-  
+
   return (
     <div>
-      <h2 className="text-xl font-bold mb-4">
-        {currentDate.toLocaleString("sv-SE", {
-          month: "long",
-          year: "numeric",
-        })}
-      </h2>
+      <div className="flex justify-end">
+        <button
+        onClick={() => exportToExcel(entries)}
+        className="bg-blue-500 text-white px-4 py-2 rounded mb-6"
+      >
+        Exportera till Excel
+      </button>
+      </div>
+      <div className="flex items-center justify-center gap-6 mb-12">
+        <button
+          onClick={() =>
+            setCurrentDate(
+              new Date(currentDate.getFullYear(), currentDate.getMonth() - 1),
+            )
+          }
+          className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300"
+        >
+          ←
+        </button>
+
+        <h2 className="text-xl font-bold">
+          {currentDate.toLocaleString("sv-SE", {
+            month: "long",
+            year: "numeric",
+          })}
+        </h2>
+
+        <button
+          onClick={() =>
+            setCurrentDate(
+              new Date(currentDate.getFullYear(), currentDate.getMonth() + 1),
+            )
+          }
+          className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300"
+        >
+          →
+        </button>
+      </div>
       <div className="flex flex-col md:flex-row gap-4 md:gap-6">
         {/* VÄNSTER: Kalender + rubrik */}
         <div className="flex-1">
@@ -141,6 +174,7 @@ const MonthView = ({ entries, setEntries }: Props) => {
                   <div className="grid grid-cols-2 sm:grid-cols-4 xl:grid-cols-7 gap-2 md:gap-3 flex-1">
                     {week.map((date, index) => {
                       const day = date.getDate();
+                      const key = date.toLocaleDateString("sv-SE");
                       const isCurrentMonth = date.getMonth() === month;
 
                       return (
@@ -150,28 +184,29 @@ const MonthView = ({ entries, setEntries }: Props) => {
                             !isCurrentMonth ? "opacity-30" : ""
                           }`}
                         >
-                          <div className="text-sm font-semibold text-gray-800">{day}</div>
+                          <div className="text-sm font-semibold text-gray-800">
+                            {day} 
+                          </div>
 
                           {isCurrentMonth && (
                             <>
                               <div className="text-xs text-gray-500 mt-0.5 px-0.5">
                                 {formatHours(
-                                  entries[day]
+                                  entries[key]
                                     ?.filter((e) => e.type === "work")
                                     .reduce(
-                                      (sum, e) =>
-                                        sum + getEntryHours(e),
+                                      (sum, e) => sum + getEntryHours(e),
                                       0,
-                                    ) ?? 0
+                                    ) ?? 0,
                                 )}
                                 h
                               </div>
 
-                              {entries[day]?.map((entry, i) => (
+                              {entries[key]?.map((entry, i) => (
                                 <div
                                   key={i}
                                   onClick={() => {
-                                    setSelectedDay(day);
+                                    setSelectedDay(key);
                                     setEditIndex(i);
                                     setShowModal(true);
                                   }}
@@ -181,7 +216,7 @@ const MonthView = ({ entries, setEntries }: Props) => {
                                   entry.startTime &&
                                   entry.endTime ? (
                                     <>
-                                     {entry.startTime}-{entry.endTime}
+                                      {entry.startTime}-{entry.endTime}
                                     </>
                                   ) : (
                                     <>
@@ -195,7 +230,7 @@ const MonthView = ({ entries, setEntries }: Props) => {
                               <div className="absolute bottom-2 right-2">
                                 <Plus
                                   onClick={() => {
-                                    setSelectedDay(day);
+                                    setSelectedDay(key);
                                     setEditIndex(null);
                                     setShowModal(true);
                                   }}
@@ -286,7 +321,7 @@ const MonthView = ({ entries, setEntries }: Props) => {
               setEditIndex(null);
             }}
             onClose={() => {
-              setShowModal(false)
+              setShowModal(false);
               setEditIndex(null);
             }}
             initialEntry={
